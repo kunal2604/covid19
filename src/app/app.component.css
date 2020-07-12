@@ -1,5 +1,5 @@
-.main-title {
-    text-align: center;
-    font-size: 5vw;
-    color: red;
+main {
+  margin-top: 1rem;
+  width: 80%;
+  margin:auto;
 }
