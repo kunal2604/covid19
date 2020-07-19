@@ -37,7 +37,6 @@ export class PostsService {
 
   addPost = (title: string, content: string) => {
     const POST: Post = {id:null, title: title, content: content};
-    console.log('POST -> ', POST);
     const URL = URLS.ADD_POST;
     this.httpClient
       .post<{ message: string }>(URL, POST)
@@ -47,12 +46,14 @@ export class PostsService {
       });
   }
 
-  deletePost = (postId: string) => {
+  deletePost(postId: string) {
     const URL = URLS.DELETE_POST + postId;
     this.httpClient
       .delete(URL)
       .subscribe(() => {
-        console.log('Deleted!!');
+        const UPDATED_POSTS = this.posts.filter(post => post.id !== postId);
+        this.posts = UPDATED_POSTS;
+        this.postsUpdated.next([...UPDATED_POSTS]);
       });
   }
 }
