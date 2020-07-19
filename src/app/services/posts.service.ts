@@ -39,8 +39,9 @@ export class PostsService {
     const POST: Post = {id:null, title: title, content: content};
     const URL = URLS.ADD_POST;
     this.httpClient
-      .post<{ message: string }>(URL, POST)
+      .post<{ message: string, postId: string }>(URL, POST)
       .subscribe(response => {
+        POST.id = response.postId;
         this.posts.push(POST);
         this.postsUpdated.next([...this.posts]);
       });
