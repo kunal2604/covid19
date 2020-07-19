@@ -47,6 +47,11 @@ export class PostsService {
       });
   }
 
+  getPost(id: string) {
+    const URL = URLS.GET_POST + id;
+    return this.httpClient.get<{ _id: string, title:string, content: string }>(URL);
+  }
+
   deletePost(postId: string) {
     const URL = URLS.DELETE_POST + postId;
     this.httpClient
@@ -55,6 +60,19 @@ export class PostsService {
         const UPDATED_POSTS = this.posts.filter(post => post.id !== postId);
         this.posts = UPDATED_POSTS;
         this.postsUpdated.next([...UPDATED_POSTS]);
+      });
+  }
+
+  updatePost(id: string, title: string, content: string) {
+    const POST: Post = { id, title, content };
+    const URL = URLS.UPDATE_POST + id;
+    this.httpClient.put(URL, POST)
+      .subscribe(response => {
+        const UPDATED_POST = [...this.posts];
+        const OLD_POST_INDEX = UPDATED_POST.findIndex(p => p.id === id);
+        UPDATED_POST[OLD_POST_INDEX] = POST;
+        this.posts = UPDATED_POST;
+        this.postsUpdated.next([...this.posts]);
       });
   }
 }
