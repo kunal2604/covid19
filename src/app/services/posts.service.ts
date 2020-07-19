@@ -46,4 +46,13 @@ export class PostsService {
         this.postsUpdated.next([...this.posts]);
       });
   }
+
+  deletePost = (postId: string) => {
+    const URL = URLS.DELETE_POST + postId;
+    this.httpClient
+      .delete(URL)
+      .subscribe(() => {
+        console.log('Deleted!!');
+      });
+  }
 }
