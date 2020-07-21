@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Post } from '../interfaces/post.model';
 import { URLS } from '../urls';
+import { CommonService } from './common.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,10 @@ export class PostsService {
   private posts: Post[] = [];
   private postsUpdated = new Subject<Post[]>();
 
-  constructor(private httpClient: HttpClient) {
+  constructor(
+    private httpClient: HttpClient,
+    private commonService: CommonService
+    ) {
   }
 
   getPosts = () => {
@@ -44,6 +48,7 @@ export class PostsService {
         POST.id = response.postId;
         this.posts.push(POST);
         this.postsUpdated.next([...this.posts]);
+        this.commonService.navigateToHome();
       });
   }
 
@@ -73,6 +78,7 @@ export class PostsService {
         UPDATED_POST[OLD_POST_INDEX] = POST;
         this.posts = UPDATED_POST;
         this.postsUpdated.next([...this.posts]);
+        this.commonService.navigateToHome();
       });
   }
 }
