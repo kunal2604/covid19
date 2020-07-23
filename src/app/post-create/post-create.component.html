@@ -12,8 +12,9 @@
 
     <div>
       <button mat-stroked-button type="button" (click)="filePicker.click()">Upload Image</button>
-      <input type="file" #filePicker>
+      <input type="file" #filePicker (change)="onImagePicked($event)">
     </div>
+
     <mat-form-field>
       <textarea
         matInput
@@ -22,6 +23,7 @@
         placeholder="Post Content"></textarea>
         <mat-error *ngIf="form.get('content').invalid">Please enter content</mat-error>
     </mat-form-field>
+
     <button
       mat-raised-button
       color="accent"
