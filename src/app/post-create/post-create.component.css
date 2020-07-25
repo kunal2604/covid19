@@ -9,3 +9,14 @@ mat-spinner {
 input[type="file"] {
   visibility: hidden;
 }
+
+.image-preview {
+  width: 3vw;
+  height: 5rem;
+  margin: 1rem 0;
+  background-color: red;
+}
+
+.image-preview img {
+  height: 100%;
+}

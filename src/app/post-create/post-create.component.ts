@@ -16,7 +16,8 @@ export class PostCreateComponent implements OnInit {
   private postId:string = undefined;
   post: Post
   isLoading:boolean = false;
-  public form: FormGroup;
+  form: FormGroup;
+  imagePreview: string;
 
   constructor(
     private postsService: PostsService,
@@ -46,11 +47,11 @@ export class PostCreateComponent implements OnInit {
           this.post = {
             id: postData._id,
             title: postData.title,
-            content: postData.content
+            content: postData.content,
           };
           this.form.setValue({
             title: this.post.title,
-            content: this.post.content
+            content: this.post.content,
           });
         })
       } else {
@@ -80,7 +81,10 @@ export class PostCreateComponent implements OnInit {
       image: FILE
     });
     this.form.get('image').updateValueAndValidity();
-    console.log(FILE);
-    console.log(this.form);
+    const FILE_READER = new FileReader();
+    FILE_READER.onload = () => {
+      this.imagePreview = FILE_READER.result as string;
+    }
+    FILE_READER.readAsDataURL(FILE);
   }
 }
