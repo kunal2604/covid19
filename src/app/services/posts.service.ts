@@ -39,13 +39,20 @@ export class PostsService {
 
   getPostUpdateListener = () => this.postsUpdated.asObservable();
 
-  addPost = (title: string, content: string) => {
-    const POST: Post = {id:null, title: title, content: content};
+  addPost = (title: string, content: string, image: File) => {
     const URL = URLS.ADD_POST;
+    const POST_DATA = new FormData();
+    POST_DATA.append('title', title);
+    POST_DATA.append('content', content);
+    POST_DATA.append('image', image, title);
     this.httpClient
-      .post<{ message: string, postId: string }>(URL, POST)
+      .post<{ message: string, postId: string }>(URL, POST_DATA)
       .subscribe(response => {
-        POST.id = response.postId;
+        const POST: Post = {
+          id: response.postId,
+          title: title,
+          content: content
+        };
         this.posts.push(POST);
         this.postsUpdated.next([...this.posts]);
         this.commonService.navigateToHome();

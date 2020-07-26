@@ -63,11 +63,15 @@ export class PostCreateComponent implements OnInit {
   }
 
   onSavePost() {
-    if(this.form.invalid)
+    if(this.form.invalid)  // If file is not image, then stop
       return;
     this.isLoading = true;
     if(this.mode == PageMode.CreatePost) {
-      this.postsService.addPost(this.form.value.title, this.form.value.content);
+      this.postsService.addPost(
+        this.form.value.title,
+        this.form.value.content,
+        this.form.value.image
+      );
     } else {
       this.postsService.updatePost(
         this.postId,
