@@ -1,9 +1,12 @@
 import { AbstractControl } from '@angular/forms';
-import { Observable, Observer } from 'rxjs';
+import { Observable, Observer, of } from 'rxjs';
 
 export const mimeType = (
   control: AbstractControl
   ): Promise<{[key:string]: any}> | Observable<{[key:string]: any}> => {
+  if (typeof(control.value) == 'string') { // if filetype is string, validation should pass because we are npt updating image
+    return of(null);
+  }
   const FILE = control.value as File;
   const FILE_READER = new FileReader();
   const FR_OBSERVABLE = Observable.create((observer: Observer<{[key:string]: any}>) => {

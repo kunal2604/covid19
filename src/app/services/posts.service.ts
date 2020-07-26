@@ -63,7 +63,7 @@ export class PostsService {
 
   getPost(id: string) {
     const URL = URLS.GET_POST + id;
-    return this.httpClient.get<{ _id: string, title:string, content: string }>(URL);
+    return this.httpClient.get<{ _id: string, title:string, content: string, imagePath: string }>(URL);
   }
 
   deletePost(postId: string) {
@@ -77,13 +77,33 @@ export class PostsService {
       });
   }
 
-  updatePost(id: string, title: string, content: string) {
-    const POST: Post = { id, title, content, imagePath: null };
+  updatePost(id: string, title: string, content: string, image: File | string) {
+    let postData: Post | FormData;
+    if(typeof(image) === 'object') {  // image was also updated ; typeof(file) =  object (File)
+      postData = new FormData();
+      postData.append('id', id);
+      postData.append('title', title);
+      postData.append('content', content);
+      postData.append('image', image, title);
+    } else {       // image not updated, typeof(file) != object (string is not object)
+      postData = {
+        id: id,
+        title: title,
+        content: content,
+        imagePath: image // string
+      }
+    }
     const URL = URLS.UPDATE_POST + id;
-    this.httpClient.put(URL, POST)
+    this.httpClient.put(URL, postData)
       .subscribe(response => {
         const UPDATED_POST = [...this.posts];
         const OLD_POST_INDEX = UPDATED_POST.findIndex(p => p.id === id);
+        const POST: Post = {
+          id,
+          title,
+          content,
+          imagePath: "" // fix later
+        }
         UPDATED_POST[OLD_POST_INDEX] = POST;
         this.posts = UPDATED_POST;
         this.postsUpdated.next([...this.posts]);
