@@ -19,8 +19,9 @@ export class PostsService {
     ) {
   }
 
-  getPosts = () => {
-    const URL = URLS.GET_POSTS;
+  getPosts = (postsPerPage: number, currentPage: number) => {
+    const QUERY_PARAMS = `?pagesize=${postsPerPage}&page=${currentPage}`;
+    const URL = URLS.GET_POSTS + QUERY_PARAMS;
     this.httpClient.get<{message:string, posts: any}>(URL)
       .pipe(map((postData) => {
         return postData.posts.map(post => {
