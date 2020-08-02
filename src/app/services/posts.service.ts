@@ -11,7 +11,7 @@ import { CommonService } from './common.service';
 })
 export class PostsService {
   private posts: Post[] = [];
-  private postsUpdated = new Subject<Post[]>();
+  private postsUpdated = new Subject<{posts: Post[], postCount: number}>();
 
   constructor(
     private httpClient: HttpClient,
@@ -22,20 +22,23 @@ export class PostsService {
   getPosts = (postsPerPage: number, currentPage: number) => {
     const QUERY_PARAMS = `?pagesize=${postsPerPage}&page=${currentPage}`;
     const URL = URLS.GET_POSTS + QUERY_PARAMS;
-    this.httpClient.get<{message:string, posts: any}>(URL)
+    this.httpClient.get<{message:string, posts: any, maxPosts: number}>(URL)
       .pipe(map((postData) => {
-        return postData.posts.map(post => {
+        return {posts: postData.posts.map(post => {
           return {
             title: post.title,
             content: post.content,
             id: post._id,
             imagePath: post.imagePath
-          }
-        })
+          };
+        }), maxPosts: postData.maxPosts};
       }))
-      .subscribe((transformedPosts) => {
-        this.posts = transformedPosts;
-        this.postsUpdated.next([...this.posts]);
+      .subscribe((transformedPostData) => {
+        this.posts = transformedPostData.posts;
+        this.postsUpdated.next({
+          posts: [...this.posts],
+          postCount: transformedPostData.maxPosts
+        });
       });
   }
 
@@ -50,14 +53,6 @@ export class PostsService {
     this.httpClient
       .post<{ message: string, post: Post }>(URL, POST_DATA)
       .subscribe(response => {
-        const POST: Post = {
-          id: response.post.id,
-          title: title,
-          content: content,
-          imagePath: response.post.imagePath
-        };
-        this.posts.push(POST);
-        this.postsUpdated.next([...this.posts]);
         this.commonService.navigateToHome();
       });
   }
@@ -69,13 +64,7 @@ export class PostsService {
 
   deletePost(postId: string) {
     const URL = URLS.DELETE_POST + postId;
-    this.httpClient
-      .delete(URL)
-      .subscribe(() => {
-        const UPDATED_POSTS = this.posts.filter(post => post.id !== postId);
-        this.posts = UPDATED_POSTS;
-        this.postsUpdated.next([...UPDATED_POSTS]);
-      });
+    return this.httpClient.delete(URL)
   }
 
   updatePost(id: string, title: string, content: string, image: File | string) {
@@ -97,17 +86,6 @@ export class PostsService {
     const URL = URLS.UPDATE_POST + id;
     this.httpClient.put(URL, postData)
       .subscribe(response => {
-        const UPDATED_POST = [...this.posts];
-        const OLD_POST_INDEX = UPDATED_POST.findIndex(p => p.id === id);
-        const POST: Post = {
-          id,
-          title,
-          content,
-          imagePath: "" // fix later
-        }
-        UPDATED_POST[OLD_POST_INDEX] = POST;
-        this.posts = UPDATED_POST;
-        this.postsUpdated.next([...this.posts]);
         this.commonService.navigateToHome();
       });
   }
