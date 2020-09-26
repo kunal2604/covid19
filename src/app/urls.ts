@@ -7,5 +7,6 @@ export const URLS = {
   ADD_POST: BASE_URL + '/api/posts/',
   DELETE_POST: BASE_URL + '/api/posts/',
   UPDATE_POST: BASE_URL + '/api/posts/',
-  CREATE_USER: BASE_URL + '/api/user/signup'
+  CREATE_USER: BASE_URL + '/api/user/signup',
+  LOGIN: BASE_URL + '/api/user/login',
 }
